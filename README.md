@@ -7,7 +7,7 @@ Stores can be added to other stores allowing the creation of hierarchies, e.g., 
 
 ## API
 Each store provides the follow methods
-* __add__(SIMBA_store) Add a store
+* __add__`(SIMBA_store)` Add a store
 * __default__`([{keys}, ...])` Set the values for the provided keys to default.
 * __set__`([{keys, values}, ...])` Set the values for the given keys. Note: multiple key value pairs might be updated at the same time
 * __get__`([{keys}, ...], {values})` Retrieve the requested values for the requested key(s).
