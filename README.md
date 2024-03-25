@@ -34,3 +34,9 @@ For SIMBA's immediate use, data types 1 and 2 seem moste important. Type 3 may a
 - Virtualization/Federation
 - Warehouse
 - Operational data store
+
+## Delineation of data used with SIMBA modules ##
+
+_ Initial data/dynamic data _
+
+
