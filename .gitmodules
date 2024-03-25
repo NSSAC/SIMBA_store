@@ -1,0 +1,3 @@
+[submodule "schema/frictionlessdata"]
+	path = schema/frictionlessdata
+	url = https://github.com/frictionlessdata/specs.git
