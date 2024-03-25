@@ -12,3 +12,17 @@ Each store provides the following methods
 * __set__`([{keys, values}, ...])` Set the values for the given keys. Note: multiple key value pairs might be updated at the same time
 * __get__`([{keys}, ...], {values})` Retrieve the requested values for the requested key(s).
 * __copy__`([{old_keys, new_keys}, ...])` Copy a store if provided old_keys, will be replaced with new. Note: all child stores will be copied too.
+
+
+## HSM Comments/notes ##
+
+
+
+# Types of data stores #
+(see, e.g., https://medium.com/swlh/the-5-data-store-patterns-data-lakes-data-hubs-data-virtualization-data-federation-data-27fd75486e2c)
+
+- Lakes
+- Hubs
+- Virtualization/Federation
+- Warehouse
+- Operational data store
