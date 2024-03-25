@@ -17,8 +17,16 @@ Each store provides the following methods
 ## HSM Comments/notes ##
 
 
+## Data for SIMBA modules ##
 
-# Types of data stores #
+1. Database
+2. File on location file system
+3. Remove file-like data (accessed through, e.g., globus or other API)
+4. Streaming data data
+
+For SIMBA's immediate use, 
+
+## Types of data stores ##
 (see, e.g., https://medium.com/swlh/the-5-data-store-patterns-data-lakes-data-hubs-data-virtualization-data-federation-data-27fd75486e2c)
 
 - Lakes
