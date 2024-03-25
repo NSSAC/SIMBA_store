@@ -19,12 +19,12 @@ Each store provides the following methods
 
 ## Data for SIMBA modules ##
 
-1. Database
-2. File on location file system
+1. File on location file system
+2. Database
 3. Remove file-like data (accessed through, e.g., globus or other API)
 4. Streaming data data
 
-For SIMBA's immediate use, 
+For SIMBA's immediate use, data types 1 and 2 seem moste important. Type 3 may apply to some of the geo/hydrological data, at least in the way they are set up (where do they get their initial data?) Type 3 may be used to transfer data from Box to Rivanna for use with modules and pipelines. Option 3 may also be what is applied to stage data for the equite atlas (from Rivanna to Box). For now, type 4 seems less relevant.
 
 ## Types of data stores ##
 (see, e.g., https://medium.com/swlh/the-5-data-store-patterns-data-lakes-data-hubs-data-virtualization-data-federation-data-27fd75486e2c)
