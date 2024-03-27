@@ -1,5 +1,33 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "store": {
+      "title": "Store",
+      "allOf": [
+        {
+          "type":"object",
+          "required":[
+            "address",
+            "type"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "stores": {
+              "$ref": "./definitions/store"
+            }
+          }
+        },
+        {
+          "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/6b7c23415235addcb0de652cb3b3db966d72e2b9/schemas/dictionary.json#/definitions/tableSchema"
+        }
+      ]
+  }
+  },
   "type": "object",
   "required": [
     "path",
@@ -12,7 +40,7 @@
     "stores":{
       "type": "array",
       "items": {
-        "$ref": "./frictionlessdata/schemas/dictionary.json#/definitions/tableSchema"
+        "$ref": "./definitions/store"
       }
     }
   }
