@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import sys
+from jsonschema import validate
+from simbastore.storefront import StoreFront
+from pathlib import Path
+
+def loadJsonFile(fileName, schema = None):
+
+    try:
+        jsonFile = open(fileName,"r")
+    
+    except:
+        sys.exit("ERROR: File '" + fileName + "' does not exist.")
+    
+    dictionary = json.load(jsonFile)
+    
+    if schema != None:
+        validate(dictionary, schema)
+        
+    jsonFile.close()
+
+    return dictionary
+
+def main(config):
+    dictionary = loadJsonFile(config)
+
+    if not 'moduleData' in dictionary:
+        sys.exit("ERROR: Missing attribute 'moduleData' in '" + config + "'.")
+      
+    if not 'configuration' in dictionary['moduleData']:
+        sys.exit("ERROR: Missing attribute 'moduleData/configuration' in '" + config + "'.")
+    
+    try:
+        StoreFront.load(dictionary['moduleData']['configuration'])
+      
+    except:
+        sys.exit("ERROR: Invalid store configuration in '" + dictionary['moduleData']['configuration'] + "'.")
+    
+    success = False
+    
+    if (dictionary['mode'] == 'start'):
+        success = StoreFront.start(dictionary['currentTick'], dictionary['currentTime'])
+
+    if (dictionary['mode'] == 'step'):
+        success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
+
+    if (dictionary['mode'] == 'end'):
+        success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
+
+    
+    if success:
+        Path(dictionary['statusFile']).open().write('{"status": "success"}')
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description="SIMBA Store Module.")
+    parser.add_argument("configuration", nargs=1, help='The configuration of the SIMBA Store Module.')
+
+    arguments = parser.parse_args()
+    main(arguments.configuration[0])
+
+        

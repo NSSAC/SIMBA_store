@@ -1,0 +1,8 @@
+
+run/
+
+simbaStore.egg-info/
+
+simbastore/__pycache__/
+
+.vscode/

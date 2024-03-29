@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_driver/master/schema/module.json",
+  "commonData": {
+    "dbHost": "128.164.3.12"
+  },
+  "mode": "start",
+  "statusFile": "/raid/shoops/git/SIMBA_Driver/run/start/status_1.json",
+  "currentTick": 0,
+  "currentTime": "2024-01-01T00:00:00+00:00",
+  "moduleData": {
+    "configuration": "/raid/shoops/git/SIMBA_store/examples/storeFront.json"
+  }
+}

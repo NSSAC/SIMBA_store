@@ -5,9 +5,8 @@
       "title": "Store",
       "allOf": [
         {
-          "type":"object",
-          "required":[
-            "address",
+          "type": "object",
+          "required": [
             "type"
           ],
           "properties": {
@@ -17,16 +16,42 @@
             "type": {
               "type": "string"
             },
+            "readOnly": {
+              "type": "boolean",
+              "default": false
+            },
             "stores": {
-              "$ref": "./definitions/store"
+              "type": "array",
+              "items": {
+                "$ref": "./definitions/store"
+              }
             }
           }
         },
         {
-          "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/6b7c23415235addcb0de652cb3b3db966d72e2b9/schemas/dictionary.json#/definitions/tableSchema"
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "path",
+                "name"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/6b7c23415235addcb0de652cb3b3db966d72e2b9/schemas/dictionary.json#/definitions/tabularDataResource"
+            }
+          ]
         }
       ]
-  }
+    }
   },
   "type": "object",
   "required": [
@@ -37,7 +62,7 @@
     "path": {
       "type": "string"
     },
-    "stores":{
+    "stores": {
       "type": "array",
       "items": {
         "$ref": "./definitions/store"

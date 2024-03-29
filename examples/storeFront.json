@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_store/main/schema/simbaStoreSchema.json",
+  "path": "run",
+  "stores": [
+    {
+      "type": "file",
+      "path": "example.csv",
+      "name": "file_store",
+      "readOnly": true
+    },
+    {
+      "type": "csv",
+      "path": "example.csv",
+      "name": "csv_store",
+      "readOnly": false,
+      "description": "Inundation data",
+      "title": "Inundation data",
+      "profile": "tabular-data-resource",
+      "schema": {
+        "fields": [
+          {
+            "title": "Latitude",
+            "name": "latitude",
+            "type": "number"
+          },
+          {
+            "title": "Longitude",
+            "name": "longitude",
+            "type": "number"
+          },
+          {
+            "title": "Inundation Level",
+            "name": "inundation_level",
+            "type": "number"
+          },
+          {
+            "title": "Wind Speed",
+            "name": "wind_speed",
+            "type": "number"
+          }
+        ],
+        "primaryKey": [
+          "latitude",
+          "longitude"
+        ]
+      }
+    }
+  ]
+}
