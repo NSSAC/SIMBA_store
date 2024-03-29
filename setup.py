@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # BEGIN: Copyright 
-# Copyright (C) 2019 - 2024 Rector and Visitors of the University of Virginia 
+# Copyright (C) 2024 Rector and Visitors of the University of Virginia 
 # All rights reserved 
 # END: Copyright 
 
