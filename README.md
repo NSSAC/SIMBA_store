@@ -1,9 +1,11 @@
+[![Documentation Status](https://readthedocs.org/projects/simba-store/badge/?version=latest)](https://simba-store.readthedocs.io/en/latest/?badge=latest)
+
 # SIMBA_store
 Distributed and extensible data storage for SIMBA. The purpose is to provide the current state and history of the system. 
 
 Each store has a schema which defines keys and values of the stored data. For the schema we will use [Frictionless Data](https://github.com/frictionlessdata/specs)
 
-Stores can be added to other stores allowing the creation of hierarchies, e.g., time dependent geospatial data. Which can be implemented as a parrent store which comprises only the key time and added geospatial data store which contains keys logintude and latitude as well as data associated with those keys.
+Stores can be added to other stores allowing the creation of hierarchies, e.g., time dependent geospatial data. Which can be implemented as a parent store which comprises only the key time and added geospatial data store which contains keys longitude and latitude as well as data associated with those keys.
 
 ## API
 Each store provides the following methods
@@ -24,7 +26,7 @@ Each store provides the following methods
 3. Remove file-like data (accessed through, e.g., globus or other API)
 4. Streaming data data
 
-For SIMBA's immediate use, data types 1 and 2 seem moste important. Type 3 may apply to some of the geo/hydrological data, at least in the way they are set up (where do they get their initial data?) Type 3 may be used to transfer data from Box to Rivanna for use with modules and pipelines. Option 3 may also be what is applied to stage data for the equite atlas (from Rivanna to Box). For now, type 4 seems less relevant.
+For SIMBA's immediate use, data types 1 and 2 seem moste important. Type 3 may apply to some of the geo/hydrological data, at least in the way they are set up (where do they get their initial data?) Type 3 may be used to transfer data from Box to Rivanna for use with modules and pipelines. Option 3 may also be what is applied to stage data for the equity atlas (from Rivanna to Box). For now, type 4 seems less relevant.
 
 
 ## Delineation of data used with SIMBA modules ##
@@ -46,7 +48,7 @@ _Dependencies: internal data v. external data_: a data set (or source) is intern
 ## CoPe examples ##
 
 - Storm inundation data: collected from Box; initial data for BI internal purposes. CSV files.
-- Road network data: DB data generated as initial data through small pipeline. Files on locaal disk.
+- Road network data: DB data generated as initial data through small pipeline. Files on local disk.
 - POI data: initial data generated as query against DB. CSV and JSON files on disk.
 - River/road crossing data: data generated as spatial query of road data (in DB) against external creek/river data (found by Dawen). Only for VA. Files on disk.
 - Population data for ESVA+: data from the detailed population pipeline. CSV files on disk.

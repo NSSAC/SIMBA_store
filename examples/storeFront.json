@@ -4,7 +4,7 @@
   "stores": [
     {
       "type": "file",
-      "path": "example.csv",
+      "path": "file.txt",
       "name": "file_store",
       "readOnly": true
     },

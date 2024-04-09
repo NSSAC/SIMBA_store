@@ -6,3 +6,5 @@ simbaStore.egg-info/
 simbastore/__pycache__/
 
 .vscode/
+
+docs/_build/

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://raw.githubusercontent.com/coveooss/json-schema-for-humans/main/config_schema.json",
+  "template_name": "md_nested"
+}
