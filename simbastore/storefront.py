@@ -38,6 +38,9 @@ class StoreFront:
 
     cls.__root = cls.resolvePath(dictionary['path'])
 
+    if not cls.__root.exists():
+      os.mkdir(cls.__root)
+      
     if 'stores' in dictionary:
       cls.__stores = cls.createStores(dictionary['stores'])
 
@@ -102,7 +105,7 @@ class StoreFront:
     if Path.cwd().joinpath(path).exists():
       return Path.cwd().joinpath(path)
 
-    return path
+    return Path(path)
 
   @classmethod
   def makeDirection(cls, directions, tick = None):
@@ -118,47 +121,72 @@ class StoreFront:
 
   @classmethod
   def start(cls, currentTick, currentTime):
-    cls.__currentTick = str(currentTick)
-    direction = cls.makeDirection([])
+    success = True
+    
+    try:
+      cls.__currentTick = str(currentTick)
+      direction = cls.makeDirection([])
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    symlink = cls.makeDirection([], 'start')
+      symlink = cls.makeDirection([], 'start')
 
-    if symlink.exists():
-      os.remove(symlink)
+      if symlink.exists():
+        os.remove(symlink)
 
-    os.symlink(direction, symlink)
+      os.symlink(cls.__currentTick, symlink)
 
-    for store in cls.__stores.values():
-      store.start(currentTick, currentTime)
+      for store in cls.__stores.values():
+        success &= store.start(currentTick, currentTime)
+        
+    except:
+      success = False
+      
+    return success    
 
   @classmethod
   def step(cls, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    cls.__currentTick = str(targetTick)
-    direction = cls.makeDirection([])
+    success = True
+    
+    try:
+      cls.__currentTick = str(targetTick)
+      direction = cls.makeDirection([])
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    for store in cls.__stores.values():
-      store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+      for store in cls.__stores.values():
+        success &= store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+        
+    except:
+      success = False
+      
+    return success    
 
   @classmethod
   def end(cls, lastRunTick, lastRunTime, endTick, endTime):
-    cls.__currentTick = str(endTick)
-    direction = cls.makeDirection([])
+    success = True
+    
+    try:
+      cls.__currentTick = str(endTick)
+      direction = cls.makeDirection([])
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    symlink = cls.makeDirection([], 'end')
+      symlink = cls.makeDirection([], 'end')
 
-    if symlink.exists():
-      os.remove(symlink)
+      if symlink.exists():
+        os.remove(symlink)
 
-    os.symlink(direction, symlink)
-    for store in cls.__stores.values():
-      store.end(lastRunTick, lastRunTime, endTick, endTime)
+      os.symlink(cls.__currentTick, symlink)
+      
+      for store in cls.__stores.values():
+        store.end(lastRunTick, lastRunTime, endTick, endTime)
+        
+    except:
+      success = False
+      
+    return success    
 

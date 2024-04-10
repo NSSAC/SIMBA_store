@@ -5,14 +5,14 @@ Getting Started
 Installation
 ------------
 
-SIMBA driver code is available from `GitHub <https://github.com/NSSAC/SIMBA_driver/>`_
+SIMBA Store code is available from `GitHub <https://github.com/NSSAC/SIMBA_Store/>`_
 
 Obtain Code
 ^^^^^^^^^^^
 
 .. code-block:: bash
 
-  git clone https://github.com/NSSAC/SIMBA_driver.git
+  git clone https://github.com/NSSAC/SIMBA_Store.git
 
 **Development Mode**: To install all requirements and execute SIMBA directly from the source code. Please execute in the top code directory: 
 
@@ -27,13 +27,13 @@ System wide installation
 
 .. code-block:: bash
 
-  sudo pip install simbaDriver
+  sudo pip install simbaStore
 
 User local installation
 
 .. code-block:: bash
 
-  pip install simbaDriver --user
+  pip install simbaStore --user
 
 
 Windows
@@ -43,12 +43,11 @@ System installation `Instructions on how to run a console as administrator <http
 
 .. code-block:: bash
 
-  pip install simbaDriver
+  pip install simbaStore
 
 User local installation (not recommeded as the script path is not in the search PATH)
 
 .. code-block:: bash
 
-  pip install simbaDriver --user
-
+  pip install simbaStore --user
 

@@ -45,37 +45,61 @@ class Store:
     return self.name
 
   def start(self, currentTick, currentTime):
-    direction = StoreFront.makeDirection(self.directions)
+    success = True
+    
+    try:
+      direction = StoreFront.makeDirection(self.directions)
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    self._start(currentTick, currentTime)
+      success &= self._start(currentTick, currentTime)
 
-    for store in self.stores.values():
-       store.start(currentTick, currentTime)
+      for store in self.stores.values():
+        success &= store.start(currentTick, currentTime)
+        
+    except:
+      success = False
+      
+    return success    
 
   def step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    direction = StoreFront.makeDirection(self.directions)
+    success = True
+    
+    try:
+      direction = StoreFront.makeDirection(self.directions)
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    self._step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+      success &= self._step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
 
-    for store in self.stores.values():
-       store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+      for store in self.stores.values():
+        success &= store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+        
+    except:
+      success = False
+      
+    return success    
 
   def end(self, lastRunTick, lastRunTime, endTick, endTime):
-    direction = StoreFront.makeDirection(self.directions)
+    success = True
+    
+    try:
+      direction = StoreFront.makeDirection(self.directions)
 
-    if not direction.exists():
-      os.mkdir(direction)
+      if not direction.exists():
+        os.mkdir(direction)
 
-    self._end(lastRunTick, lastRunTime, endTick, endTime)
+      success &= self._end(lastRunTick, lastRunTime, endTick, endTime)
 
-    for store in self.stores.values():
-       store.end(lastRunTick, lastRunTime, endTick, endTime)
+      for store in self.stores.values():
+        success &= store.end(lastRunTick, lastRunTime, endTick, endTime)
+        
+    except:
+      success = False
+      
+    return success    
 
   def open(self, tick = None):
     if tick == None:
@@ -95,15 +119,15 @@ class Store:
 
   @abstractmethod
   def _start(self, currentTick, currentTime):
-    pass
+    return False
 
   @abstractmethod
   def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    pass
+    return False
 
   @abstractmethod
   def _end(self, lastRunTick, lastRunTime, endTick, endTime):
-    pass
+    return False
 
   @abstractmethod
   def _open(self, tick):

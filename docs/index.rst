@@ -10,7 +10,7 @@ Welcome to SIMBA Store documentation!
    :maxdepth: 2
    :caption: Contents:
 
-SIMBA is a framework for performing multi-scale simulations in an HPC environment. Each simulation step can involve multiple modules which update the current state of the system. The order and the frequency in which these modules are executed is handled by a flexible :doc:`store front <configuration/store-front>`
+SIMBA is a framework for performing multi-scale simulations in an HPC environment. Each simulation step can involve multiple modules which update the current state of the system. The order and the frequency in which these modules are executed is handled by a flexible. In order seamlessly provide data management and access control to data involved in the process The SIMBA Store Front is used.  :doc:`store front <configuration/store-front>`
 
 .. toctree::
    :maxdepth: 2

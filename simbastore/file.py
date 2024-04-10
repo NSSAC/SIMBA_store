@@ -21,29 +21,53 @@ class File(Store):
     self.files = {}
 
   def _start(self, currentTick, currentTime):
-    shutil.copy(StoreFront.resolvePath(self.path), StoreFront.makeDirection(self.directions))
+    success = True
+    
+    try:
+      shutil.copy(StoreFront.resolvePath(self.path), StoreFront.makeDirection(self.directions))
+        
+    except:
+      success = False
+      
+    return success    
 
   def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+    success = True
+    
+    try:
+      if self.readOnly:
+        symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
 
-      if symlink.exists():
-        os.remove(symlink)
+        if symlink.exists():
+          os.remove(symlink)
 
-      os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
-    else:
-      shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+      else:
+        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        
+    except:
+      success = False
+      
+    return success    
 
   def _end(self, lastRunTick, lastRunTime, endTick, endTime):
-    if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+    success = True
+    
+    try:
+      if self.readOnly:
+        symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
 
-      if symlink.exists():
-        os.remove(symlink)
+        if symlink.exists():
+          os.remove(symlink)
 
-      os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
-    else:
-      shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions))
+        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+      else:
+        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions))
+        
+    except:
+      success = False
+      
+    return success    
 
   def _open(self, tick):
     if not str(tick) in self.files:

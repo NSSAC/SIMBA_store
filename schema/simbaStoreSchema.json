@@ -3,6 +3,9 @@
   "definitions": {
     "store": {
       "title": "Store",
+      "$$target": [
+        "#/definitions/store"
+      ],
       "allOf": [
         {
           "type": "object",
@@ -23,7 +26,7 @@
             "stores": {
               "type": "array",
               "items": {
-                "$ref": "./definitions/store"
+                "$ref": "#/definitions/store"
               }
             }
           }
@@ -46,7 +49,8 @@
               }
             },
             {
-              "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/6b7c23415235addcb0de652cb3b3db966d72e2b9/schemas/dictionary.json#/definitions/tabularDataResource"
+              "description": "FrictionlessData: tabular data resource",
+              "$schema": "file://./frictionlessdata/schemas/tabular-data-resource.json"
             }
           ]
         }
@@ -65,7 +69,7 @@
     "stores": {
       "type": "array",
       "items": {
-        "$ref": "./definitions/store"
+        "$ref": "#/definitions/store"
       }
     }
   }

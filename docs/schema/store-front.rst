@@ -1,6 +1,6 @@
-Driver Schema
-=============
+Store Front Schema
+==================
 
-.. jsonschema:: ../../schema/driver.json
+.. jsonschema:: ../../schema/simbaStoreSchema.json
 
 

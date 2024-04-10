@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_store/main/schema/simbaStoreSchema.json",
-  "path": "run",
+  "path": "StoreFront",
   "stores": [
     {
       "type": "file",

@@ -29,7 +29,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'SIMBA'
+project = 'SIMBA Store'
 copyright = '2023, Rector and Visitors of the University of Virginia'
 author = 'Stefan Hoops, Henning S. Mortveit'
 

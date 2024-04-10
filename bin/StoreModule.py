@@ -62,9 +62,8 @@ def main(config):
     if (dictionary['mode'] == 'end'):
         success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
 
-    
     if success:
-        Path(dictionary['statusFile']).open().write('{"status": "success"}')
+        open(Path(dictionary['statusFile']), mode = 'w').write('{"status": "success"}')
 
 if __name__ == '__main__':
     import argparse

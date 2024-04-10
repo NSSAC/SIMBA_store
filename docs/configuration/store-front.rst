@@ -1,5 +1,5 @@
-SIMBA Schedule
-==============
+SIMBA Store Front
+=================
 **Contents:**
 
 * |simba-store-front-introduction-synopsis|_
@@ -18,7 +18,7 @@ Introduction
 
    |simba-store-front-introduction-synopsis|
 
-The SIMBA schedule comprises modules, which are flexibly scheduled at certain ticks (time points) during a simulation. Furthermore each module has fine grained options on how to execute the module. The later utilizes `parsl <https://parsl.readthedocs.io/en/stable/index.html>`_ allowing SIMBA to execute the modules on different computing resources.
+The SIMBA Store Front comprises stores. Each store is an independent data storage provider optionally containing further stores to allow hierarchical composition of data.
 
 .. |simba-store-front-specification-synopsis| replace:: Specification: how to specify a SIMBA store front. 
 .. _`simba-store-front-specification-synopsis`: `simba-store-front-specification`_
@@ -32,7 +32,7 @@ Specification
 
    |simba-store-front-specification-synopsis|
 
-The schedule JSON configuration file has two attributes: ``schedule`` and ``commonData``. 
+The Store Front JSON configuration file has two properties: ``path`` and ``stores``. 
 
 .. list-table:: Store Front.
   :name: store-front-store-front
@@ -41,63 +41,14 @@ The schedule JSON configuration file has two attributes: ``schedule`` and ``comm
   * - | Name
     - | Type 
     - | Description
-  * - | schedule
+  * - | path
+    - | string 
+    - | a directory path where the store front will be physically located
+  * - | stores
     - | array 
-    - | items consist of all of: 
-      | :ref:`schedule-module-details`
-      | :ref:`schedule-module-schedule`
-      | `Parsl Module. <../schema/schedule.html#parsl-module>`_
-  * - | commonData
-    - | object 
-    - | Common data provided to all modules upon execution (default: none)
+    - | a list of stores 
 
-.. list-table:: Module Identification and Details.
-  :name: schedule-module-details
-  :header-rows: 1
-
-  * - | Name
-    - | Type 
-    - | Description
-  * - | name
-    - | string 
-    - | The name of the module.
-  * - | command
-    - | string 
-    - | The command to execute the module.
-  * - | updateCommonData
-    - | Boolean
-    - | Specifies whether this module may update common data 
-      | (default: false)
-  * - | moduleData
-    - | object
-    - | Module specific data provided to the module upon execution 
-      | (default: none)
-
-.. list-table:: Module Schedule. 
-  :name: schedule-module-schedule
-  :header-rows: 1
-
-  * - | Name
-    - | Type 
-    - | Description
-  * - | priority
-    - | number 
-    - | Priority of Module Execution, higher priority is executed first and  
-      | priorities must be unique.
-  * - | startTick
-    - | string 
-    - | The current tick at which the module is executed first
-      | (default: -infinity).
-  * - | endTick
-    - | integer
-    - | The targetTick for which the module is executed last
-      | (default: infinity).
-  * - | tickIncrement
-    - | positive integer
-    - | The tick increment in which the module is executed (default: 1).
-
-
-The normative JSON schema can be found at:  :doc:`Schedule Schema </schema/schedule>` 
+The normative JSON schema can be found at:  :doc:`Store Front Schema </schema/store-front>` 
 
 .. _simba-store-front-examples:
 

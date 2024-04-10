@@ -1,7 +1,7 @@
 Examples
 ========
 
-Before running either of the examples you will have to install :doc:`SIMBA </quickstart/get-started>`.
+Before running either of the examples you will have to install :doc:`SIMBA Store </quickstart/get-started>`.
 Both examples use a simple ``bash`` script to demonstrate the functionality.
 
 **application.sh**:
