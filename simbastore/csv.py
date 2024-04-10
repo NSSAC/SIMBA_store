@@ -96,17 +96,17 @@ class CSV(Store):
     return success    
 
   def _open(self, tick):
-    if not str(tick) in self.dataFrames:
-      self.dataFrames[str(tick)] = read_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype)
+    if not StoreFront.formatTick(tick) in self.dataFrames:
+      self.dataFrames[StoreFront.formatTick(tick)] = read_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype)
 
-    return self.dataFrames[str(tick)]
+    return self.dataFrames[StoreFront.formatTick(tick)]
 
   def _close(self, tick, save, data):
-    if str(tick) in self.dataFrames:
+    if StoreFront.formatTick(tick) in self.dataFrames:
       if save and tick == StoreFront.getCurrentTick() and not self.readOnly:
         if isinstance(data, DataFrame):
           data.to_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path))
         else:
-          self.dataFrames[str(tick)].to_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path))
+          self.dataFrames[StoreFront.formatTick(tick)].to_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path))
         
-      del self.dataFrames[str(tick)]
+      del self.dataFrames[StoreFront.formatTick(tick)]

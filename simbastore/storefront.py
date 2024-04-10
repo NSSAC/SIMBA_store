@@ -21,7 +21,8 @@ class StoreFront:
   __root = None
   __stores = {}
   __currentTick = None
-
+  __tickFormat = '{}'
+  
   @classmethod
   def load(cls, configuration):
     cls.__configuration = Path(configuration).absolute()
@@ -52,6 +53,14 @@ class StoreFront:
       return cls.__stores[store]
 
     return None
+
+  @classmethod
+  def setTickFormat(cls, tickFormat):
+    cls.__tickFormat = tickFormat
+
+  @classmethod
+  def formatTick(cls, tick):
+    return cls.__tickFormat.format(tick)
 
   @classmethod
   def setCurrentTick(cls, tick):
@@ -111,9 +120,11 @@ class StoreFront:
   def makeDirection(cls, directions, tick = None):
     if tick == None:
       Direction = cls.__root.joinpath(cls.__currentTick)
+    elif isinstance(tick, int):
+      Direction = cls.__root.joinpath(cls.formatTick(tick))
     else:
-      Direction = cls.__root.joinpath(str(tick))
-
+      Direction = cls.__root.joinpath(tick)
+      
     for d in directions:
       Direction = Direction.joinpath(d)
 
@@ -124,7 +135,7 @@ class StoreFront:
     success = True
     
     try:
-      cls.__currentTick = str(currentTick)
+      cls.__currentTick = cls.formatTick(currentTick)
       direction = cls.makeDirection([])
 
       if not direction.exists():
@@ -150,7 +161,7 @@ class StoreFront:
     success = True
     
     try:
-      cls.__currentTick = str(targetTick)
+      cls.__currentTick = cls.formatTick(targetTick)
       direction = cls.makeDirection([])
 
       if not direction.exists():
@@ -169,7 +180,7 @@ class StoreFront:
     success = True
     
     try:
-      cls.__currentTick = str(endTick)
+      cls.__currentTick = cls.formatTick(endTick)
       direction = cls.makeDirection([])
 
       if not direction.exists():

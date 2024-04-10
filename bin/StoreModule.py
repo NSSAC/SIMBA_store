@@ -45,11 +45,16 @@ def main(config):
     if not 'configuration' in dictionary['moduleData']:
         sys.exit("ERROR: Missing attribute 'moduleData/configuration' in '" + config + "'.")
     
+    if not 'tickFormat' in dictionary:
+        sys.exit("ERROR: Missing attribute 'tickFormat' in '" + config + "'.")
+        
     try:
         StoreFront.load(dictionary['moduleData']['configuration'])
       
     except:
         sys.exit("ERROR: Invalid store configuration in '" + dictionary['moduleData']['configuration'] + "'.")
+    
+    StoreFront.setTickFormat(dictionary['tickFormat'])
     
     success = False
     

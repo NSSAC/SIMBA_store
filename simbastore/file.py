@@ -70,15 +70,15 @@ class File(Store):
     return success    
 
   def _open(self, tick):
-    if not str(tick) in self.files:
+    if not StoreFront.formatTick(tick) in self.files:
       if self.readOnly or tick != StoreFront.getCurrentTick():
-        self.files[str(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('r')
+        self.files[StoreFront.formatTick(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('r')
       else:
-        self.files[str(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('+')
+        self.files[StoreFront.formatTick(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('+')
 
-    return self.files[str(tick)]
+    return self.files[StoreFront.formatTick(tick)]
 
   def _close(self, tick, save, data):
-    if str(tick) in self.files:
-      self.files[str(tick)].close
-      del self.files[str(tick)]
+    if StoreFront.formatTick(tick) in self.files:
+      self.files[StoreFront.formatTick(tick)].close
+      del self.files[StoreFront.formatTick(tick)]
