@@ -46,11 +46,25 @@
                 "name": {
                   "type": "string"
                 }
-              }
+              },
+              "patternProperties": {
+                "address": {},
+                "type": {},
+                "readOnly": {},
+                "stores": {}
+              },
+              "additionalProperties": false
             },
             {
               "description": "FrictionlessData: tabular data resource",
-              "$schema": "file://./frictionlessdata/schemas/tabular-data-resource.json"
+              "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/master/schemas/dictionary.json#/definitions/tabularDataResource",
+              "patternProperties": {
+                "address": {},
+                "type": {},
+                "readOnly": {},
+                "stores": {}
+              },
+              "additionalProperties": false
             }
           ]
         }

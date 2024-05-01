@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "allOf": [
+    {
+      "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/master/schemas/dictionary.json#/definitions/tabularDataResource"
+    },
+    {
+      "type": "object",
+      "required": [
+        "timePoints"
+      ],
+      "properties": {
+        "timePoints": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "initialTime",
+                "endTime",
+                "increment"
+              ],
+              "properties": {
+                "initialTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "increment": {
+                  "type": "string",
+                  "format": "duration"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
