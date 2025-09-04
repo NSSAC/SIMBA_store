@@ -18,6 +18,7 @@ from jsonschema import validate
 
 class StoreFront:
   __configuration = None
+  __name = None
   __root = None
   __stores = {}
   __currentTick = None
@@ -37,11 +38,8 @@ class StoreFront:
 
     jsonFile.close()
 
-    cls.__root = cls.resolvePath(dictionary['path'])
+    cls.__name = dictionary['path']
 
-    if not cls.__root.exists():
-      os.mkdir(cls.__root)
-      
     if 'stores' in dictionary:
       cls.__stores = cls.createStores(dictionary['stores'])
 
@@ -142,6 +140,15 @@ class StoreFront:
 
     jsonFile.close()
 
+    if not cls.__root:
+        if 'outputDirectory' in dictionary:
+            cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name)
+        else:
+            cls.__root = Path(cls.__name).resolve()
+
+        if not cls.__root.exists():
+            os.mkdir(cls.__root)
+        
     if 'commonData' in dictionary and 'storeFront' in dictionary['commonData']:
         dictionary['commonData']['storeFront'] = str(cls.__configuration)
     
