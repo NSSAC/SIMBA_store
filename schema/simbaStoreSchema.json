@@ -9,9 +9,6 @@
       "allOf": [
         {
           "type": "object",
-          "required": [
-            "type"
-          ],
           "properties": {
             "address": {
               "type": "string"
@@ -23,37 +20,27 @@
               "type": "boolean",
               "default": false
             },
+            "initialPath": {
+              "type": "string"
+            },
             "stores": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/store"
               }
             }
-          }
+          },
+          "required": [
+            "type"
+          ]
         },
         {
           "oneOf": [
             {
-              "type": "object",
-              "required": [
-                "path",
-                "name"
-              ],
-              "properties": {
-                "path": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "patternProperties": {
-                "address": {},
-                "type": {},
-                "readOnly": {},
-                "stores": {}
-              },
-              "additionalProperties": false
+              "$ref": "#/definitions/fileStore"
+            },
+            {
+              "$ref": "#/definitions/csvStore"
             },
             {
               "description": "FrictionlessData: tabular data resource",
@@ -68,6 +55,62 @@
             }
           ]
         }
+      ]
+    },
+    "fileStore": {
+      "$id": "fileStore",
+      "title": "File Store",
+      "$$target": [
+        "#/definitions/file"
+      ],
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "file"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "name",
+        "type",
+        "initialPath"
+      ]
+    },
+    "csvStore": {
+      "$id": "csvStore",
+      "title": "CSV Store",
+      "$$target": [
+        "#/definitions/csv"
+      ],
+      "allOf": [
+        { 
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "csv"
+              ]
+            }
+          }
+        },
+        {
+          "description": "FrictionlessData: tabular data resource",
+          "$ref": "https://raw.githubusercontent.com/frictionlessdata/specs/master/schemas/dictionary.json#/definitions/tabularDataResource",
+          "patternProperties": {
+            "address": {},
+            "type": {},
+            "readOnly": {},
+            "stores": {}
+          }
+        }
+      ],
+      "required": [
+        "path",
+        "name",
+        "type",
+        "initialPath"
       ]
     }
   },

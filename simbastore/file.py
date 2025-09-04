@@ -11,6 +11,7 @@
 # END: License 
 
 import os
+import sys
 import shutil
 from pathlib import Path
 from simbastore.storefront import StoreFront
@@ -24,9 +25,10 @@ class File(Store):
     success = True
     
     try:
-      shutil.copy(StoreFront.resolvePath(self.path), StoreFront.makeDirection(self.directions))
+      shutil.copy(StoreFront.resolvePath(self.initialPath), StoreFront.makeDirection(self.directions).joinpath(self.path))
         
-    except:
+    except Exception as e:
+      print("ERROR: Could not copy file '" + str(StoreFront.resolvePath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
       success = False
       
     return success    
@@ -34,39 +36,52 @@ class File(Store):
   def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
     success = True
     
-    try:
-      if self.readOnly:
-        symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+    if self.readOnly:
+      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
 
-        if symlink.exists():
-          os.remove(symlink)
+      if symlink.exists():
+        os.remove(symlink)
 
+      try:
         os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
-      else:
+        
+      except Exception as e:
+        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        success = False
+        
+    else:
+      try:
         shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
         
-    except:
-      success = False
-      
+      except Exception as e:
+        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        success = False
+        
     return success    
 
   def _end(self, lastRunTick, lastRunTime, endTick, endTime):
     success = True
     
-    try:
-      if self.readOnly:
-        symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+    if self.readOnly:
+      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
 
-        if symlink.exists():
-          os.remove(symlink)
+      if symlink.exists():
+        os.remove(symlink)
 
+      try:
         os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
-      else:
-        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions))
         
-    except:
-      success = False
-      
+      except Exception as e:
+        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        success = False
+    else:
+      try:
+        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        
+      except Exception as e:
+        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        success = False
+        
     return success    
 
   def _open(self, tick):

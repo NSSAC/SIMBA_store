@@ -131,6 +131,40 @@ class StoreFront:
     return Direction
 
   @classmethod
+  def execute(cls, configuration):
+    try:
+      jsonFile = open(configuration,'r')
+
+    except:
+      sys.exit("ERROR: File '" + configuration + "' does not exist.")
+
+    dictionary = json.load(jsonFile)
+
+    jsonFile.close()
+
+    if 'commonData' in dictionary and 'storeFront' in dictionary['commonData']:
+        dictionary['commonData']['storeFront'] = str(cls.__configuration)
+    
+    if (dictionary['mode'] == 'start'):
+        success = StoreFront.start(dictionary['currentTick'], dictionary['currentTime'])
+
+    if (dictionary['mode'] == 'step'):
+        success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
+
+    if (dictionary['mode'] == 'end'):
+        success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
+
+    if 'commonData' in dictionary and 'storeFront' in dictionary['commonData']:
+        dictionary['commonData']['storeFront'] = str(cls.__configuration)
+        
+    dictionary['status'] = 'success' if success else 'failed'
+    jsonFile = open(dictionary['statusFile'],'w')
+    json.dump(dictionary, jsonFile, indent=2)
+    jsonFile.close()
+
+    return success
+  
+  @classmethod
   def start(cls, currentTick, currentTime):
     success = True
     
@@ -153,7 +187,7 @@ class StoreFront:
         
     except:
       success = False
-      
+                      
     return success    
 
   @classmethod

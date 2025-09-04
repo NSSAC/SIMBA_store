@@ -23,7 +23,8 @@ class Store:
     self.directions = directions[:]
     self.directions.append(configuration['name'])
     self.path = configuration['path']
-
+    self.initialPath = configuration['initialPath']
+    
     if 'readOnly' in configuration:
       self.readOnly = configuration['readOnly']
     else:

@@ -55,20 +55,7 @@ def main(config):
         sys.exit("ERROR: Invalid store configuration in '" + dictionary['moduleData']['configuration'] + "'.")
     
     StoreFront.setTickFormat(dictionary['tickFormat'])
-    
-    success = False
-    
-    if (dictionary['mode'] == 'start'):
-        success = StoreFront.start(dictionary['currentTick'], dictionary['currentTime'])
-
-    if (dictionary['mode'] == 'step'):
-        success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
-
-    if (dictionary['mode'] == 'end'):
-        success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
-
-    if success:
-        open(Path(dictionary['statusFile']), mode = 'w').write('{"status": "success"}')
+    StoreFront.execute(config)
 
 if __name__ == '__main__':
     import argparse

@@ -31,7 +31,8 @@ setuptools.setup(name='simbaStore',
     scripts=["bin/store.py"],
     install_requires=[
         'pandas',
-        'jsonschema'
+        'jsonschema',
+        'duckdb'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
