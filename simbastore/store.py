@@ -119,15 +119,15 @@ class Store:
     pass
 
   @abstractmethod
-  def _start(self, currentTick, currentTime):
+  def _start(self, currentTick, currentTime) -> bool:
     return False
 
   @abstractmethod
-  def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
+  def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime) -> bool:
     return False
 
   @abstractmethod
-  def _end(self, lastRunTick, lastRunTime, endTick, endTime):
+  def _end(self, lastRunTick, lastRunTime, endTick, endTime) -> bool:
     return False
 
   @abstractmethod

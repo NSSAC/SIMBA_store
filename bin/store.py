@@ -26,23 +26,23 @@ StoreFront.load(arguments.configuration[0])
 StoreFront.setCurrentTick(0)
 
 file_store = StoreFront.get('file_store')
-name = file_store.getName()
-file = file_store.open()
+name = file_store.getName() # pyright: ignore[reportOptionalMemberAccess]
+file = file_store.open() # pyright: ignore[reportOptionalMemberAccess]
 
 csv_store = StoreFront.get('csv_store')
-name = csv_store.getName()
-csv = csv_store.open()
+name = csv_store.getName() # pyright: ignore[reportOptionalMemberAccess]
+csv = csv_store.open() # pyright: ignore[reportOptionalMemberAccess]
 
 print(csv)
 
-csv.loc[123.4560, 126.4456] = [2.22, 7.88]
-print(csv.columns)
-print(csv.index)
+csv.loc[123.4560, 126.4456] = [2.22, 7.88] # pyright: ignore[reportAttributeAccessIssue]
+print(csv.columns) # pyright: ignore[reportAttributeAccessIssue]
+print(csv.index) # pyright: ignore[reportAttributeAccessIssue]
 
-csv2 = pandas.DataFrame([[6.66, 7.88]], columns = csv.columns, index = pandas.MultiIndex.from_arrays([[222.4560], [126.4456]], names = csv.index.names))
+csv2 = pandas.DataFrame([[6.66, 7.88]], columns = csv.columns, index = pandas.MultiIndex.from_arrays([[222.4560], [126.4456]], names = csv.index.names)) # pyright: ignore[reportAttributeAccessIssue]
 csv = pandas.concat([csv, csv2]) 
 
 print(csv)
-csv_store.close(save = True, data = csv)
+csv_store.close(save = True, data = csv) # pyright: ignore[reportOptionalMemberAccess]
 
 exit

@@ -15,13 +15,14 @@ import os
 from pathlib import Path
 import json
 from jsonschema import validate
+from simbastore.store import Store
 
 class StoreFront:
   __configuration = None
   __name = None
   __root = None
   __stores = {}
-  __currentTick = None
+  __currentTick = None 
   __tickFormat = '{}'
   
   @classmethod
@@ -46,7 +47,7 @@ class StoreFront:
     return
 
   @classmethod
-  def get(cls, store):
+  def get(cls, store) -> Store | None:
     if store in cls.__stores:
       return cls.__stores[store]
 
@@ -57,7 +58,7 @@ class StoreFront:
     cls.__tickFormat = tickFormat
 
   @classmethod
-  def formatTick(cls, tick):
+  def formatTick(cls, tick) -> str:
     return cls.__tickFormat.format(tick)
 
   @classmethod
@@ -117,11 +118,11 @@ class StoreFront:
   @classmethod
   def makeDirection(cls, directions, tick = None):
     if tick == None:
-      Direction = cls.__root.joinpath(cls.__currentTick)
+      Direction = cls.__root.joinpath(cls.__currentTick) # type: ignore
     elif isinstance(tick, int):
-      Direction = cls.__root.joinpath(cls.formatTick(tick))
+      Direction = cls.__root.joinpath(cls.formatTick(tick)) # type: ignore
     else:
-      Direction = cls.__root.joinpath(tick)
+      Direction = cls.__root.joinpath(tick) # type: ignore
       
     for d in directions:
       Direction = Direction.joinpath(d)
@@ -130,6 +131,8 @@ class StoreFront:
 
   @classmethod
   def execute(cls, configuration):
+    success = False
+    
     try:
       jsonFile = open(configuration,'r')
 
@@ -142,9 +145,9 @@ class StoreFront:
 
     if not cls.__root:
         if 'outputDirectory' in dictionary:
-            cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name)
+            cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name) # type: ignore
         else:
-            cls.__root = Path(cls.__name).resolve()
+            cls.__root = Path(cls.__name).resolve() # type: ignore
 
         if not cls.__root.exists():
             os.mkdir(cls.__root)

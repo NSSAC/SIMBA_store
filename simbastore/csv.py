@@ -19,6 +19,7 @@ from pandas import read_csv
 from pandas import DataFrame
 from pandas.api.extensions import no_default
 import numpy as np
+import sys
 
 class CSV(Store):
   def _init(self, configuration, directions):
@@ -111,7 +112,7 @@ class CSV(Store):
 
   def _open(self, tick):
     if not StoreFront.formatTick(tick) in self.dataFrames:
-      self.dataFrames[StoreFront.formatTick(tick)] = read_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype)
+      self.dataFrames[StoreFront.formatTick(tick)] = read_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype) # pyright: ignore[reportArgumentType]
 
     return self.dataFrames[StoreFront.formatTick(tick)]
 
