@@ -44,7 +44,7 @@
             },
             {
               "description": "FrictionlessData: tabular data resource",
-              "$ref": "https://raw.githubusercontent.com/frictionlessdata/datapackage/refs/heads/main/public/profiles/1.0/dataresource.json"
+              "$ref": "https://raw.githubusercontent.com/frictionlessdata/datapackage/refs/heads/main/public/profiles/1.0/dataresource.json",
               "patternProperties": {
                 "address": {},
                 "type": {},
