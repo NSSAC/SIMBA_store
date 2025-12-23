@@ -13,7 +13,6 @@
 import os
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
-from simbastore.storefront import StoreFront
 
 class Store:
   __metaclass__ = ABCMeta
@@ -38,6 +37,7 @@ class Store:
     self.stores = {}
 
     if 'stores' in configuration:
+      from simbastore.storefront import StoreFront
       self.stores = StoreFront.createStores(configuration['stores'], self.directions)
 
     self._init(configuration, directions)
@@ -49,6 +49,7 @@ class Store:
     success = True
     
     try:
+      from simbastore.storefront import StoreFront
       direction = StoreFront.makeDirection(self.directions)
 
       if not direction.exists():
@@ -68,6 +69,7 @@ class Store:
     success = True
     
     try:
+      from simbastore.storefront import StoreFront
       direction = StoreFront.makeDirection(self.directions)
 
       if not direction.exists():
@@ -87,6 +89,7 @@ class Store:
     success = True
     
     try:
+      from simbastore.storefront import StoreFront
       direction = StoreFront.makeDirection(self.directions)
 
       if not direction.exists():
@@ -104,12 +107,14 @@ class Store:
 
   def open(self, tick = None):
     if tick == None:
+      from simbastore.storefront import StoreFront
       tick = StoreFront.getCurrentTick()
 
     return self._open(tick)
 
   def close(self, tick = None, save = False, data = None):
     if tick == None:
+      from simbastore.storefront import StoreFront
       tick = StoreFront.getCurrentTick()
 
     return self._close(tick, save, data)

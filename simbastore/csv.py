@@ -37,15 +37,26 @@ class CSV(Store):
         self.dtype = {}
         self.names = []
 
+        pandas_type_map = {
+          'string': str,
+          'number': np.float64,
+          'integer': np.int64,
+          'bool': np.bool,
+          'geojson': str
+        }
+        
         for f in schema['fields']:
           self.names.append(f['name'])
-          self.dtype[f['name']] = np.float64
+          self.dtype[f['name']] = pandas_type_map[f['type']]
 
       if 'primaryKey' in schema:
         self.index_col = []
 
-        for k in schema['primaryKey']:
-          self.index_col.append(k)
+        if isinstance(schema['primaryKey'], list):
+          for k in schema['primaryKey']:
+            self.index_col.append(k)
+        else:
+          self.index_col.append(schema['primaryKey'])
 
   def _start(self, currentTick, currentTime):
     success = True

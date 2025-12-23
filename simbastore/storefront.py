@@ -12,6 +12,7 @@
 
 import sys
 import os
+import copy
 from pathlib import Path
 import json
 from jsonschema import validate
@@ -143,32 +144,41 @@ class StoreFront:
 
     jsonFile.close()
 
-    if not cls.__root:
-        if 'outputDirectory' in dictionary:
-            cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name) # type: ignore
-        else:
-            cls.__root = Path(cls.__name).resolve() # type: ignore
-
-        if not cls.__root.exists():
-            os.mkdir(cls.__root)
-        
-    if 'commonData' in dictionary and 'storeFront' in dictionary['commonData']:
-        dictionary['commonData']['storeFront'] = str(cls.__configuration)
+    storeFronts = {}
     
+    if 'commonData' in dictionary and 'storeFronts' in dictionary['commonData']:
+      storeFronts = dictionary['commonData']['storeFronts']
+      dictionary['commonData']['storeFronts'] = {}
+      storeFronts[cls.__name] = copy.deepcopy(dictionary)
+
+    if not cls.__root:
+      if 'outputDirectory' in dictionary:
+        cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name).absolute() # type: ignore
+      else:
+        cls.__root = Path(cls.__name).resolve() # type: ignore
+
+      if not cls.__root.exists():
+        cls.__root.mkdir(parents=True)
+        
     if (dictionary['mode'] == 'start'):
         success = StoreFront.start(dictionary['currentTick'], dictionary['currentTime'])
-
+    
     if (dictionary['mode'] == 'step'):
-        success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
+      success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
 
     if (dictionary['mode'] == 'end'):
-        success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
+      success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
 
-    if 'commonData' in dictionary and 'storeFront' in dictionary['commonData']:
-        dictionary['commonData']['storeFront'] = str(cls.__configuration)
+    if 'commonData' in dictionary and 'storeFronts' in dictionary['commonData']:
+      dictionary['commonData']['storeFronts'] = storeFronts
         
     dictionary['status'] = 'success' if success else 'failed'
-    jsonFile = open(dictionary['statusFile'],'w')
+    
+    current_directory = os.getcwd()
+    print(f"Current working directory: {current_directory}")
+    
+    jsonFile = Path(dictionary['statusFile']).open(mode='w')
+    
     json.dump(dictionary, jsonFile, indent=2)
     jsonFile.close()
 
