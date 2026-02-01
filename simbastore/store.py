@@ -1,144 +1,172 @@
-# BEGIN: Copyright 
-# Copyright (C) 2024 Rector and Visitors of the University of Virginia 
-# All rights reserved 
-# END: Copyright 
+# BEGIN: Copyright
+# Copyright (C) 2024 Rector and Visitors of the University of Virginia
+# All rights reserved
+# END: Copyright
 
-# BEGIN: License 
-# Licensed under the Apache License, Version 2.0 (the "License"); 
-# you may not use this file except in compliance with the License. 
-# You may obtain a copy of the License at 
-#   http://www.apache.org/licenses/LICENSE-2.0 
-# END: License 
+# BEGIN: License
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#   http://www.apache.org/licenses/LICENSE-2.0
+# END: License
 
 import os
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
 
+
 class Store:
-  __metaclass__ = ABCMeta
+    __metaclass__ = ABCMeta
 
-  def __init__(self, configuration, directions = []):
-    self.name = configuration['name']
-    self.directions = directions[:]
-    self.directions.append(configuration['name'])
-    self.path = configuration['path']
-    self.initialPath = configuration['initialPath']
-    
-    if 'readOnly' in configuration:
-      self.readOnly = configuration['readOnly']
-    else:
-      self.readOnly = False
+    def __init__(self, parent, configuration, directions=[]):
+        from simbastore.storefront import StoreFront
 
-    if 'table' in configuration:
-      self.table = configuration['table']
-    else:
-      self.table = None
+        self.parent = parent
+        self.name = configuration["name"]
+        self.directions = directions[:]
+        self.directions.append(configuration["name"])
+        self.path = configuration["path"]
+        self.initialPath = parent.resolvePath(configuration["initialPath"])
+        self.storeFront = None
 
-    self.stores = {}
+        if "readOnly" in configuration:
+            self.readOnly = configuration["readOnly"]
+        else:
+            self.readOnly = False
 
-    if 'stores' in configuration:
-      from simbastore.storefront import StoreFront
-      self.stores = StoreFront.createStores(configuration['stores'], self.directions)
+        if "table" in configuration:
+            self.table = configuration["table"]
+        else:
+            self.table = None
 
-    self._init(configuration, directions)
+        if "stores" in configuration:
+            self.storeFront = StoreFront()
+            self.storeFront.load(configuration)
 
-  def getName(self):
-    return self.name
+        self._init(configuration, directions)
 
-  def start(self, currentTick, currentTime):
-    success = True
-    
-    try:
-      from simbastore.storefront import StoreFront
-      direction = StoreFront.makeDirection(self.directions)
+    def getName(self):
+        return self.name
 
-      if not direction.exists():
-        os.mkdir(direction)
+    def start(self, currentTick, currentTime):
+        success = True
 
-      success &= self._start(currentTick, currentTime)
+        try:
+            from simbastore.storefront import StoreFront
 
-      for store in self.stores.values():
-        success &= store.start(currentTick, currentTime)
-        
-    except:
-      success = False
-      
-    return success    
+            direction = self.parent.makeDirection(self.directions)
 
-  def step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    success = True
-    
-    try:
-      from simbastore.storefront import StoreFront
-      direction = StoreFront.makeDirection(self.directions)
+            if not direction.exists():
+                os.mkdir(direction)
 
-      if not direction.exists():
-        os.mkdir(direction)
+            success &= self._start(currentTick, currentTime)
 
-      success &= self._step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
+            if self.storeFront:
+                success &= self.storeFront.start(currentTick, currentTime)
 
-      for store in self.stores.values():
-        success &= store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
-        
-    except:
-      success = False
-      
-    return success    
+        except:
+            success = False
 
-  def end(self, lastRunTick, lastRunTime, endTick, endTime):
-    success = True
-    
-    try:
-      from simbastore.storefront import StoreFront
-      direction = StoreFront.makeDirection(self.directions)
+        return success
 
-      if not direction.exists():
-        os.mkdir(direction)
+    def step(
+        self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime
+    ):
+        success = True
 
-      success &= self._end(lastRunTick, lastRunTime, endTick, endTime)
+        try:
+            from simbastore.storefront import StoreFront
 
-      for store in self.stores.values():
-        success &= store.end(lastRunTick, lastRunTime, endTick, endTime)
-        
-    except:
-      success = False
-      
-    return success    
+            direction = self.parent.makeDirection(self.directions)
 
-  def open(self, tick = None):
-    if tick == None:
-      from simbastore.storefront import StoreFront
-      tick = StoreFront.getCurrentTick()
+            if not direction.exists():
+                os.mkdir(direction)
 
-    return self._open(tick)
+            success &= self._step(
+                lastRunTick,
+                lastRunTime,
+                currentTick,
+                currentTime,
+                targetTick,
+                targetTime,
+            )
 
-  def close(self, tick = None, save = False, data = None):
-    if tick == None:
-      from simbastore.storefront import StoreFront
-      tick = StoreFront.getCurrentTick()
+            if self.storeFront:
+                success &= self.storeFront.step(
+                    lastRunTick,
+                    lastRunTime,
+                    currentTick,
+                    currentTime,
+                    targetTick,
+                    targetTime,
+                )
 
-    return self._close(tick, save, data)
+        except:
+            success = False
 
-  @abstractmethod
-  def _init(self, configuration, directions):
-    pass
+        return success
 
-  @abstractmethod
-  def _start(self, currentTick, currentTime) -> bool:
-    return False
+    def end(self, lastRunTick, lastRunTime, endTick, endTime):
+        success = True
 
-  @abstractmethod
-  def _step(self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime) -> bool:
-    return False
+        try:
+            from simbastore.storefront import StoreFront
 
-  @abstractmethod
-  def _end(self, lastRunTick, lastRunTime, endTick, endTime) -> bool:
-    return False
+            direction = self.parent.makeDirection(self.directions)
 
-  @abstractmethod
-  def _open(self, tick):
-    pass
+            if not direction.exists():
+                os.mkdir(direction)
 
-  @abstractmethod
-  def _close(self, tick, save, data):
-    pass
+            success &= self._end(lastRunTick, lastRunTime, endTick, endTime)
+
+            if self.storeFront:
+                success &= self.storeFront.end(
+                    lastRunTick, lastRunTime, endTick, endTime
+                )
+
+        except:
+            success = False
+
+        return success
+
+    def open(self, tick=None):
+        if tick == None:
+            from simbastore.storefront import StoreFront
+
+            tick = self.parent.getCurrentTick()
+
+        return self._open(tick)
+
+    def close(self, tick=None, save=False, data=None):
+        if tick == None:
+            from simbastore.storefront import StoreFront
+
+            tick = self.parent.getCurrentTick()
+
+        return self._close(tick, save, data)
+
+    @abstractmethod
+    def _init(self, configuration, directions):
+        pass
+
+    @abstractmethod
+    def _start(self, currentTick, currentTime) -> bool:
+        return False
+
+    @abstractmethod
+    def _step(
+        self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime
+    ) -> bool:
+        return False
+
+    @abstractmethod
+    def _end(self, lastRunTick, lastRunTime, endTick, endTime) -> bool:
+        return False
+
+    @abstractmethod
+    def _open(self, tick):
+        pass
+
+    @abstractmethod
+    def _close(self, tick, save, data):
+        pass

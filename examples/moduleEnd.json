@@ -4,12 +4,13 @@
     "dbHost": "128.164.3.12"
   },
   "mode": "end",
-  "statusFile": "/raid/shoops/git/SIMBA_Driver/run/end/status_1.json",
+  "statusFile": "./status_1.json",
   "lastRunTick": 1,
   "lastRunTime": "2024-01-01T03:00:00+00:00",
   "currentTick": 11,
   "currentTime": "2024-01-01T03:30:00+00:00",
+  "tickFormat": "{:03d}",
   "moduleData": {
-    "configuration": "/raid/shoops/git/SIMBA_store/examples/storeFront.json"
+    "configuration": "./storeFront.json"
   }
 }

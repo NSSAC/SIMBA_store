@@ -5,12 +5,14 @@
     {
       "type": "file",
       "path": "file.txt",
+      "initialPath": "./file.txt",
       "name": "file_store",
       "readOnly": true
     },
     {
       "type": "csv",
       "path": "example.csv",
+      "initialPath": "example.csv",
       "name": "csv_store",
       "readOnly": false,
       "description": "Inundation data",

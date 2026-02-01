@@ -38,24 +38,35 @@ def loadJsonFile(fileName, schema = None):
 
 def main(config):
     dictionary = loadJsonFile(config)
-
+    
+    if not 'tickFormat' in dictionary:
+        sys.exit("ERROR: Missing attribute 'tickFormat' in '" + config + "'.")
+    
     if not 'moduleData' in dictionary:
         sys.exit("ERROR: Missing attribute 'moduleData' in '" + config + "'.")
       
     if not 'configuration' in dictionary['moduleData']:
         sys.exit("ERROR: Missing attribute 'moduleData/configuration' in '" + config + "'.")
     
-    if not 'tickFormat' in dictionary:
-        sys.exit("ERROR: Missing attribute 'tickFormat' in '" + config + "'.")
-        
+    configDir = Path(config).parent.absolute()
+    configuration = Path(dictionary['moduleData']['configuration']) 
+    
+    if not configuration.is_absolute():
+        if Path.joinpath(configDir, configuration).exists():
+            configuration = Path.joinpath(configDir, configuration)
+        else:
+            configuration = configuration.absolute()
+                    
+    storeFront = StoreFront()
+    
     try:
-        StoreFront.load(dictionary['moduleData']['configuration'])
+        storeFront.load(configuration)
       
     except:
         sys.exit("ERROR: Invalid store configuration in '" + dictionary['moduleData']['configuration'] + "'.")
     
-    StoreFront.setTickFormat(dictionary['tickFormat'])
-    StoreFront.execute(config)
+    storeFront.setTickFormat(dictionary['tickFormat'])
+    storeFront.execute(config)
 
 if __name__ == '__main__':
     import argparse

@@ -25,10 +25,10 @@ class File(Store):
     success = True
     
     try:
-      shutil.copy(StoreFront.resolvePath(self.initialPath), StoreFront.makeDirection(self.directions).joinpath(self.path))
+      shutil.copy(self.parent.resolvePath(self.initialPath), self.parent.makeDirection(self.directions).joinpath(self.path))
         
     except Exception as e:
-      print("ERROR: Could not copy file '" + str(StoreFront.resolvePath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+      print("ERROR: Could not copy file '" + str(self.parent.resolvePath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
       success = False
       
     return success    
@@ -37,24 +37,24 @@ class File(Store):
     success = True
     
     if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+      symlink = self.parent.makeDirection(self.directions).joinpath(self.path)
 
       if symlink.exists():
         os.remove(symlink)
 
       try:
-        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+        os.symlink(self.parent.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
         
       except Exception as e:
-        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        print("ERROR: Could not create symlink '" + str(self.parent.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
         success = False
         
     else:
       try:
-        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        shutil.copy(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path), self.parent.makeDirection(self.directions).joinpath(self.path))
         
       except Exception as e:
-        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        print("ERROR: Could not copy file '" + str(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
         success = False
         
     return success    
@@ -63,37 +63,37 @@ class File(Store):
     success = True
     
     if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+      symlink = self.parent.makeDirection(self.directions).joinpath(self.path)
 
       if symlink.exists():
         os.remove(symlink)
 
       try:
-        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+        os.symlink(self.parent.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
         
       except Exception as e:
-        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        print("ERROR: Could not create symlink '" + str(self.parent.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
         success = False
     else:
       try:
-        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        shutil.copy(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path), self.parent.makeDirection(self.directions).joinpath(self.path))
         
       except Exception as e:
-        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        print("ERROR: Could not copy file '" + str(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
         success = False
         
     return success    
 
   def _open(self, tick):
-    if not StoreFront.formatTick(tick) in self.files:
-      if self.readOnly or tick != StoreFront.getCurrentTick():
-        self.files[StoreFront.formatTick(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('r')
+    if not self.parent.formatTick(tick) in self.files:
+      if self.readOnly or tick != self.parent.getCurrentTick():
+        self.files[self.parent.formatTick(tick)] =  self.parent.makeDirection(self.directions, tick).joinpath(self.path).open('r')
       else:
-        self.files[StoreFront.formatTick(tick)] =  StoreFront.makeDirection(self.directions, tick).joinpath(self.path).open('+')
+        self.files[self.parent.formatTick(tick)] =  self.parent.makeDirection(self.directions, tick).joinpath(self.path).open('+')
 
-    return self.files[StoreFront.formatTick(tick)]
+    return self.files[self.parent.formatTick(tick)]
 
   def _close(self, tick, save, data):
-    if StoreFront.formatTick(tick) in self.files:
-      self.files[StoreFront.formatTick(tick)].close
-      del self.files[StoreFront.formatTick(tick)]
+    if self.parent.formatTick(tick) in self.files:
+      self.files[self.parent.formatTick(tick)].close
+      del self.files[self.parent.formatTick(tick)]

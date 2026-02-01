@@ -62,10 +62,10 @@ class CSV(Store):
     success = True
     
     try:
-      shutil.copy(StoreFront.resolvePath(self.initialPath), StoreFront.makeDirection(self.directions).joinpath(self.path))
+      shutil.copy(self.parent.resolvePath(self.initialPath), self.parent.makeDirection(self.directions).joinpath(self.path))
         
     except Exception as e:
-      print("ERROR: Could not copy file '" + str(StoreFront.resolvePath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+      print("ERROR: Could not copy file '" + str(self.parent.resolvePath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
       success = False
       
     return success    
@@ -74,24 +74,24 @@ class CSV(Store):
     success = True
     
     if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+      symlink = self.parent.makeDirection(self.directions).joinpath(self.path)
 
       if symlink.exists():
         os.remove(symlink)
 
       try:
-        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+        os.symlink(self.parent.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
         
       except Exception as e:
-        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        print("ERROR: Could not create symlink '" + str(self.parent.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
         success = False
         
     else:
       try:
-        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        shutil.copy(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path), self.parent.makeDirection(self.directions).joinpath(self.path))
         
       except Exception as e:
-        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        print("ERROR: Could not copy file '" + str(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
         success = False
       
     return success    
@@ -100,39 +100,39 @@ class CSV(Store):
     success = True
     
     if self.readOnly:
-      symlink = StoreFront.makeDirection(self.directions).joinpath(self.path)
+      symlink = self.parent.makeDirection(self.directions).joinpath(self.path)
 
       if symlink.exists():
         os.remove(symlink)
 
       try:
-        os.symlink(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
+        os.symlink(self.parent.makeDirection(self.directions, 'start').joinpath(self.path), symlink)
         
       except Exception as e:
-        print("ERROR: Could not create symlink '" + str(StoreFront.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
+        print("ERROR: Could not create symlink '" + str(self.parent.makeDirection(self.directions, 'start').joinpath(self.path)) + "' to '" + str(symlink) + "'.", file=sys.stderr)
         success = False
     else:
       try:
-        shutil.copy(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path), StoreFront.makeDirection(self.directions).joinpath(self.path))
+        shutil.copy(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path), self.parent.makeDirection(self.directions).joinpath(self.path))
         
       except Exception as e:
-        print("ERROR: Could not copy file '" + str(StoreFront.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(StoreFront.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
+        print("ERROR: Could not copy file '" + str(self.parent.makeDirection(self.directions, lastRunTick).joinpath(self.path)) + "' to '" + str(self.parent.makeDirection(self.directions).joinpath(self.path)) + "'.", file=sys.stderr)
         success = False
         
     return success    
 
   def _open(self, tick):
-    if not StoreFront.formatTick(tick) in self.dataFrames:
-      self.dataFrames[StoreFront.formatTick(tick)] = read_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype) # pyright: ignore[reportArgumentType]
+    if not self.parent.formatTick(tick) in self.dataFrames:
+      self.dataFrames[self.parent.formatTick(tick)] = read_csv(self.parent.makeDirection(self.directions, tick).joinpath(self.path), header = self.header, names = self.names, index_col = self.index_col, dtype = self.dtype) # pyright: ignore[reportArgumentType]
 
-    return self.dataFrames[StoreFront.formatTick(tick)]
+    return self.dataFrames[self.parent.formatTick(tick)]
 
   def _close(self, tick, save, data):
-    if StoreFront.formatTick(tick) in self.dataFrames:
-      if save and tick == StoreFront.getCurrentTick() and not self.readOnly:
+    if self.parent.formatTick(tick) in self.dataFrames:
+      if save and tick == self.parent.getCurrentTick() and not self.readOnly:
         if isinstance(data, DataFrame):
-          data.to_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path))
+          data.to_csv(self.parent.makeDirection(self.directions, tick).joinpath(self.path))
         else:
-          self.dataFrames[StoreFront.formatTick(tick)].to_csv(StoreFront.makeDirection(self.directions, tick).joinpath(self.path))
+          self.dataFrames[self.parent.formatTick(tick)].to_csv(self.parent.makeDirection(self.directions, tick).joinpath(self.path))
         
-      del self.dataFrames[StoreFront.formatTick(tick)]
+      del self.dataFrames[self.parent.formatTick(tick)]

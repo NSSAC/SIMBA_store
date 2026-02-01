@@ -1,14 +1,14 @@
-# BEGIN: Copyright 
-# Copyright (C) 2024 Rector and Visitors of the University of Virginia 
-# All rights reserved 
-# END: Copyright 
+# BEGIN: Copyright
+# Copyright (C) 2024 Rector and Visitors of the University of Virginia
+# All rights reserved
+# END: Copyright
 
-# BEGIN: License 
-# Licensed under the Apache License, Version 2.0 (the "License"); 
-# you may not use this file except in compliance with the License. 
-# You may obtain a copy of the License at 
-#   http://www.apache.org/licenses/LICENSE-2.0 
-# END: License 
+# BEGIN: License
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#   http://www.apache.org/licenses/LICENSE-2.0
+# END: License
 
 import sys
 import os
@@ -18,240 +18,268 @@ import json
 from jsonschema import validate
 from simbastore.store import Store
 
+
 class StoreFront:
-  __configuration = None
-  __name = None
-  __root = None
-  __stores = {}
-  __currentTick = None 
-  __tickFormat = '{}'
-  
-  @classmethod
-  def load(cls, configuration):
-    cls.__configuration = Path(configuration).absolute()
+    @classmethod
+    def ResolvePath(
+        cls, pathToResolve, RelativeTo, forceExistence: bool = True
+    ) -> Path:
+        if Path(pathToResolve).is_absolute():
+            return Path(pathToResolve)
 
-    try:
-      jsonFile = open(cls.__configuration,'r')
+        if not isinstance(RelativeTo, list):
+            RelativeTo = [RelativeTo]
 
-    except:
-      sys.exit("ERROR: File '" + configuration + "' does not exist.")
+        for r in RelativeTo:
+            if not r:
+                continue
 
-    dictionary = json.load(jsonFile)
+            relativeTo = Path(r)
 
-    jsonFile.close()
+            if relativeTo.is_file():
+                relativeTo = relativeTo.absolute().parent
 
-    cls.__name = dictionary['path']
+            if relativeTo.joinpath(pathToResolve).exists() or not forceExistence:
+                return relativeTo.joinpath(pathToResolve)
 
-    if 'stores' in dictionary:
-      cls.__stores = cls.createStores(dictionary['stores'])
+        return Path(pathToResolve)
 
-    return
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.configuration = None
+        self.name = None
+        self.root = None
+        self.stores = {}
+        self.currentTick = None
+        self.tickFormat = "{}"
 
-  @classmethod
-  def get(cls, store) -> Store | None:
-    if store in cls.__stores:
-      return cls.__stores[store]
+    def load(self, configuration):
+        self.configuration = Path(configuration).absolute()
 
-    return None
+        try:
+            jsonFile = open(self.configuration, "r")
 
-  @classmethod
-  def setTickFormat(cls, tickFormat):
-    cls.__tickFormat = tickFormat
+        except:
+            sys.exit("ERROR: File '" + configuration + "' does not exist.")
 
-  @classmethod
-  def formatTick(cls, tick) -> str:
-    return cls.__tickFormat.format(tick)
+        dictionary = json.load(jsonFile)
 
-  @classmethod
-  def setCurrentTick(cls, tick):
-    cls.__currentTick = tick
+        jsonFile.close()
 
-  @classmethod
-  def getCurrentTick(cls):
-    return cls.__currentTick
+        self.name = dictionary["path"]
 
-  @classmethod
-  def root(cls):
-    return cls.__root
+        if "stores" in dictionary:
+            self.stores = self.createStores(dictionary["stores"])
 
-  @classmethod
-  def createStores(cls, ss, directions = []):
-    from simbastore.file import File
-    from simbastore.csv import CSV
+        return
 
-    stores = {}
+    def get(self, store) -> Store | None:
+        if store in self.stores:
+            return self.stores[store]
 
-    for s in ss:
-      store = None
+        return None
 
-      if s['type'] == 'file':
-        store = File(s, directions)
+    def setTickFormat(self, tickFormat):
+        self.tickFormat = tickFormat
 
-      if s['type'] == 'csv':
-        store = CSV(s, directions)
+    def formatTick(self, tick) -> str:
+        return self.tickFormat.format(tick)
 
-      if store == None:
-        continue
+    def setCurrentTick(self, tick):
+        self.currentTick = tick
 
-      if store.getName() in stores:
-        sys.exit("ERROR: Store names must be unique in '" + str(cls.__configuration) + "'.")
+    def getCurrentTick(self):
+        return self.currentTick
 
-      stores[store.getName()] = store
+    def root(self):
+        return self.root
 
-    return stores
+    def createStores(self, ss, directions=[]):
+        from simbastore.file import File
+        from simbastore.csv import CSV
 
-  @classmethod
-  def resolvePath(cls, path):
-    if Path(path).is_absolute():
-      return path
+        stores = {}
 
-    if cls.__configuration and cls.__configuration.parent.joinpath(path).exists():
-      return cls.__configuration.parent.joinpath(path)
+        for s in ss:
+            store = None
 
-    if cls.__root and cls.__root.joinpath(path).exists():
-      return cls.__root.joinpath(path)
+            if s["type"] == "file":
+                store = File(self, s, directions)
 
-    if Path.cwd().joinpath(path).exists():
-      return Path.cwd().joinpath(path)
+            if s["type"] == "csv":
+                store = CSV(self, s, directions)
 
-    return Path(path)
+            if store == None:
+                continue
 
-  @classmethod
-  def makeDirection(cls, directions, tick = None):
-    if tick == None:
-      Direction = cls.__root.joinpath(cls.__currentTick) # type: ignore
-    elif isinstance(tick, int):
-      Direction = cls.__root.joinpath(cls.formatTick(tick)) # type: ignore
-    else:
-      Direction = cls.__root.joinpath(tick) # type: ignore
-      
-    for d in directions:
-      Direction = Direction.joinpath(d)
+            if store.getName() in stores:
+                sys.exit(
+                    "ERROR: Store names must be unique in '"
+                    + str(self.configuration)
+                    + "'."
+                )
 
-    return Direction
+            stores[store.getName()] = store
 
-  @classmethod
-  def execute(cls, configuration):
-    success = False
-    
-    try:
-      jsonFile = open(configuration,'r')
+        return stores
 
-    except:
-      sys.exit("ERROR: File '" + configuration + "' does not exist.")
+    def resolvePath(self, path) -> Path:
+        return StoreFront.ResolvePath(path, [self.configuration, self.root, Path.cwd()])
 
-    dictionary = json.load(jsonFile)
+    def makeDirection(self, directions, tick=None):
+        if self.parent:
+            Direction = self.parent.makeDirections([self.name], tick)
+        else:
+            if tick == None:
+                Direction = self.root.joinpath(self.currentTick)  # type: ignore
+            elif isinstance(tick, int):
+                Direction = self.root.joinpath(self.formatTick(tick))  # type: ignore
+            else:
+                Direction = self.root.joinpath(tick)  # type: ignore
 
-    jsonFile.close()
+        for d in directions:
+            Direction = Direction.joinpath(d)
 
-    storeFronts = {}
-    
-    if 'commonData' in dictionary and 'storeFronts' in dictionary['commonData']:
-      storeFronts = dictionary['commonData']['storeFronts']
-      dictionary['commonData']['storeFronts'] = {}
-      storeFronts[cls.__name] = copy.deepcopy(dictionary)
+        return Direction
 
-    if not cls.__root:
-      if 'outputDirectory' in dictionary:
-        cls.__root = Path(dictionary['outputDirectory']).joinpath(cls.__name).absolute() # type: ignore
-      else:
-        cls.__root = Path(cls.__name).resolve() # type: ignore
+    def execute(self, configuration):
+        success = False
 
-      if not cls.__root.exists():
-        cls.__root.mkdir(parents=True)
-        
-    if (dictionary['mode'] == 'start'):
-        success = StoreFront.start(dictionary['currentTick'], dictionary['currentTime'])
-    
-    if (dictionary['mode'] == 'step'):
-      success = StoreFront.step(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'], dictionary['targetTick'], dictionary['targetTime'])
+        try:
+            jsonFile = open(configuration, "r")
 
-    if (dictionary['mode'] == 'end'):
-      success = StoreFront.end(dictionary['lastRunTick'], dictionary['lastRunTime'], dictionary['currentTick'], dictionary['currentTime'])
+        except:
+            sys.exit("ERROR: File '" + configuration + "' does not exist.")
 
-    if 'commonData' in dictionary and 'storeFronts' in dictionary['commonData']:
-      dictionary['commonData']['storeFronts'] = storeFronts
-        
-    dictionary['status'] = 'success' if success else 'failed'
-    
-    current_directory = os.getcwd()
-    print(f"Current working directory: {current_directory}")
-    
-    jsonFile = Path(dictionary['statusFile']).open(mode='w')
-    
-    json.dump(dictionary, jsonFile, indent=2)
-    jsonFile.close()
+        dictionary = json.load(jsonFile)
 
-    return success
-  
-  @classmethod
-  def start(cls, currentTick, currentTime):
-    success = True
-    
-    try:
-      cls.__currentTick = cls.formatTick(currentTick)
-      direction = cls.makeDirection([])
+        jsonFile.close()
 
-      if not direction.exists():
-        os.mkdir(direction)
+        storeFronts = {}
 
-      symlink = cls.makeDirection([], 'start')
+        if "commonData" in dictionary and "storeFronts" in dictionary["commonData"]:
+            storeFronts = dictionary["commonData"]["storeFronts"]
+            dictionary["commonData"]["storeFronts"] = {}
+            storeFronts[self.name] = copy.deepcopy(dictionary)
 
-      if symlink.exists():
-        os.remove(symlink)
+        if not self.root:
+            if "outputDirectory" in dictionary:
+                self.root = StoreFront.ResolvePath(dictionary["outputDirectory"], configuration, False).absolute().joinpath(self.name)  # type: ignore
+            else:
+                self.root = Path(self.name).resolve()  # type: ignore
 
-      os.symlink(cls.__currentTick, symlink)
+            if not self.root.exists():
+                self.root.mkdir(parents=True)
 
-      for store in cls.__stores.values():
-        success &= store.start(currentTick, currentTime)
-        
-    except:
-      success = False
-                      
-    return success    
+        if dictionary["mode"] == "start":
+            success = self.start(dictionary["currentTick"], dictionary["currentTime"])
 
-  @classmethod
-  def step(cls, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime):
-    success = True
-    
-    try:
-      cls.__currentTick = cls.formatTick(targetTick)
-      direction = cls.makeDirection([])
+        if dictionary["mode"] == "step":
+            success = self.step(
+                dictionary["lastRunTick"],
+                dictionary["lastRunTime"],
+                dictionary["currentTick"],
+                dictionary["currentTime"],
+                dictionary["targetTick"],
+                dictionary["targetTime"],
+            )
 
-      if not direction.exists():
-        os.mkdir(direction)
+        if dictionary["mode"] == "end":
+            success = self.end(
+                dictionary["lastRunTick"],
+                dictionary["lastRunTime"],
+                dictionary["currentTick"],
+                dictionary["currentTime"],
+            )
 
-      for store in cls.__stores.values():
-        success &= store.step(lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime)
-        
-    except:
-      success = False
-      
-    return success    
+        if "commonData" in dictionary and "storeFronts" in dictionary["commonData"]:
+            dictionary["commonData"]["storeFronts"] = storeFronts
 
-  @classmethod
-  def end(cls, lastRunTick, lastRunTime, endTick, endTime):
-    success = True
-    
-    try:
-      cls.__currentTick = cls.formatTick(endTick)
-      direction = cls.makeDirection([])
+        dictionary["status"] = "success" if success else "failed"
 
-      if not direction.exists():
-        os.mkdir(direction)
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
 
-      symlink = cls.makeDirection([], 'end')
+        jsonFile = self.resolvePath(dictionary["statusFile"]).open(mode="w")
 
-      if symlink.exists():
-        os.remove(symlink)
+        json.dump(dictionary, jsonFile, indent=2)
+        jsonFile.close()
 
-      os.symlink(cls.__currentTick, symlink)
-      
-      for store in cls.__stores.values():
-        store.end(lastRunTick, lastRunTime, endTick, endTime)
-        
-    except:
-      success = False
-      
-    return success    
+        return success
 
+    def start(self, currentTick, currentTime):
+        success = True
+
+        try:
+            self.currentTick = self.formatTick(currentTick)
+            direction = self.makeDirection([])
+
+            if not direction.exists():
+                os.mkdir(direction)
+
+            symlink = self.makeDirection([], "start")
+
+            if symlink.exists():
+                os.remove(symlink)
+
+            os.symlink(self.currentTick, symlink)
+
+            for store in self.stores.values():
+                success &= store.start(currentTick, currentTime)
+
+        except:
+            success = False
+
+        return success
+
+    def step(
+        self, lastRunTick, lastRunTime, currentTick, currentTime, targetTick, targetTime
+    ):
+        success = True
+
+        try:
+            self.currentTick = self.formatTick(targetTick)
+            direction = self.makeDirection([])
+
+            if not direction.exists():
+                os.mkdir(direction)
+
+            for store in self.stores.values():
+                success &= store.step(
+                    lastRunTick,
+                    lastRunTime,
+                    currentTick,
+                    currentTime,
+                    targetTick,
+                    targetTime,
+                )
+
+        except:
+            success = False
+
+        return success
+
+    def end(self, lastRunTick, lastRunTime, endTick, endTime):
+        success = True
+
+        try:
+            self.currentTick = self.formatTick(endTick)
+            direction = self.makeDirection([])
+
+            if not direction.exists():
+                os.mkdir(direction)
+
+            symlink = self.makeDirection([], "end")
+
+            if symlink.exists():
+                os.remove(symlink)
+
+            os.symlink(self.currentTick, symlink)
+
+            for store in self.stores.values():
+                store.end(lastRunTick, lastRunTime, endTick, endTime)
+
+        except:
+            success = False
+
+        return success
