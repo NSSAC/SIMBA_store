@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_driver/master/schema/module.json",
+  "outputDirectory": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236",
+  "commonData": {
+    "storeFronts": {
+      "Store_Front_Static": {
+        "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_driver/master/schema/module.json",
+        "outputDirectory": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236",
+        "commonData": {
+          "storeFronts": {}
+        },
+        "mode": "start",
+        "statusFile": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236/000/status_1.json",
+        "currentTick": 0,
+        "currentTime": "2025-01-01T00:00:00+00:00",
+        "tickFormat": "{:03d}",
+        "moduleData": {
+          "configuration": "/raid/home/shoops/git/AguaSim/run-config/configuration/StaticStoreFront.json"
+        }
+      },
+      "Store_Front_Macro_Step": {
+        "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_driver/master/schema/module.json",
+        "outputDirectory": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236",
+        "commonData": {
+          "storeFronts": {}
+        },
+        "mode": "start",
+        "statusFile": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236/000/status_2.json",
+        "currentTick": 0,
+        "currentTime": "2025-01-01T00:00:00+00:00",
+        "tickFormat": "{:03d}",
+        "moduleData": {
+          "configuration": "/raid/home/shoops/git/AguaSim/run-config/configuration/MacroStepStoreFront.json"
+        }
+      },
+      "Store_Front_Micro_Step": {
+        "$schema": "https://raw.githubusercontent.com/NSSAC/SIMBA_driver/master/schema/module.json",
+        "outputDirectory": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236",
+        "commonData": {
+          "storeFronts": {}
+        },
+        "mode": "start",
+        "statusFile": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236/000/status_3.json",
+        "currentTick": 0,
+        "currentTime": "2025-01-01T00:00:00+00:00",
+        "tickFormat": "{:03d}",
+        "moduleData": {
+          "configuration": "/raid/home/shoops/git/AguaSim/run-config/configuration/MicroStepStoreFront.json"
+        }
+      }
+    }
+  },
+  "mode": "start",
+  "statusFile": "/raid/home/shoops/git/AguaSim/run-config/output/20260202113527.1928236/000/status_4.json",
+  "currentTick": 0,
+  "currentTime": "2025-01-01T00:00:00+00:00",
+  "tickFormat": "{:03d}"
+}

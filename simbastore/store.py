@@ -12,11 +12,25 @@
 
 import os
 from pathlib import Path
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Store:
-    __metaclass__ = ABCMeta
+class Store(ABC):
+    @classmethod
+    def create(cls, parent, configuration, directions=[]):
+        store = None
+
+        if configuration["type"] == "file":
+            from simbastore.filestore import File
+
+            store = File(parent, configuration, directions)
+
+        if configuration["type"] == "csv":
+            from simbastore.csvstore import CSV
+
+            store = CSV(parent, configuration, directions)
+
+        return store
 
     def __init__(self, parent, configuration, directions=[]):
         from simbastore.storefront import StoreFront
@@ -47,6 +61,9 @@ class Store:
 
     def getName(self):
         return self.name
+
+    def getStoreFront(self):
+        return self.storeFront
 
     def start(self, currentTick, currentTime):
         success = True

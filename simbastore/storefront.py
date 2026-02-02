@@ -95,19 +95,10 @@ class StoreFront:
         return self.root
 
     def createStores(self, ss, directions=[]):
-        from simbastore.file import File
-        from simbastore.csv import CSV
-
         stores = {}
 
         for s in ss:
-            store = None
-
-            if s["type"] == "file":
-                store = File(self, s, directions)
-
-            if s["type"] == "csv":
-                store = CSV(self, s, directions)
+            store = Store.create(self, s, directions)
 
             if store == None:
                 continue
@@ -158,6 +149,9 @@ class StoreFront:
         storeFronts = {}
 
         if "commonData" in dictionary and "storeFronts" in dictionary["commonData"]:
+            dictionary["moduleData"]["configuration"] = str(
+                self.resolvePath(dictionary["moduleData"]["configuration"])
+            )
             storeFronts = dictionary["commonData"]["storeFronts"]
             dictionary["commonData"]["storeFronts"] = {}
             storeFronts[self.name] = copy.deepcopy(dictionary)
