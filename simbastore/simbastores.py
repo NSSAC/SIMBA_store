@@ -25,39 +25,33 @@ class SimbaStores:
             jsonFile = open(self.configuration, "r")
 
         except:
-            sys.exit("ERROR: File '" + configuration + "' does not exist.")
+            sys.exit(f"ERROR: File '{str(self.configuration)}' does not exist.")
 
         dictionary = json.load(jsonFile)
         jsonFile.close()
 
         if not "commonData" in dictionary:
             sys.exit(
-                "ERROR: Missing attribute 'commonData' in '" + configuration + "'."
+                f"ERROR: Missing attribute 'commonData' in '{str(self.configuration)}'."
             )
 
         if not "storeFronts" in dictionary["commonData"]:
             sys.exit(
-                "ERROR: Missing attribute 'commonData/storeFronts' in '"
-                + configuration
-                + "'."
+                f"ERROR: Missing attribute 'commonData/storeFronts' in '{str(self.configuration)}'."
             )
 
         for name, config in dictionary["commonData"]["storeFronts"].items():
             if name in self.storeFronts:
-                sys.exit("ERROR: Duplicate store front name: '" + name + "'.")
+                sys.exit(f"ERROR: Duplicate store front name: '{name}'.")
 
             if not "moduleData" in config:
                 sys.exit(
-                    "ERROR: Missing attribute 'moduleData' for store front '"
-                    + name
-                    + "'."
+                    f"ERROR: Missing attribute 'moduleData' for store front '{name}'."
                 )
 
             if not "configuration" in config["moduleData"]:
                 sys.exit(
-                    "ERROR: Missing attribute 'moduleData/configuration' for store front '"
-                    + name
-                    + "'."
+                    f"ERROR: Missing attribute 'moduleData/configuration' for store front '{name}'."
                 )
 
             storeFront = StoreFront()
@@ -82,10 +76,7 @@ class SimbaStores:
 
                 if (not tmpStore) or (not tmpStore.getStoreFront()):
                     sys.exit(
-                        "Error: Store front '"
-                        + storeFront
-                        + "'not found in '"
-                        + parentStoreFront.getName()
+                        f"Error: Store front '{storeFront}' not found in '{parentStoreFront.getName()}'."
                     )
 
                 parentStoreFront = tmpStore.getStoreFront()
