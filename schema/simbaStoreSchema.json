@@ -37,10 +37,16 @@
         {
           "oneOf": [
             {
+              "$ref": "#/definitions/storeFront"
+            },
+            {
               "$ref": "#/definitions/fileStore"
             },
             {
               "$ref": "#/definitions/csvStore"
+            },
+            {
+              "$ref": "#/definitions/directoryStore"
             },
             {
               "description": "FrictionlessData: tabular data resource",
@@ -55,6 +61,29 @@
             }
           ]
         }
+      ]
+    },
+    "storeFront": {
+      "$id": "storeFront",
+      "title": "Store Front",
+      "$$target": [
+        "#/definitions/storeFront"
+      ],
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "storeFront"
+          ]
+        },
+        "configuration": {
+          "type": "string",
+          "description": "Path to a store front configuration file."
+        }
+      },
+      "required": [
+        "type",
+        "configuration"
       ]
     },
     "fileStore": {
@@ -85,7 +114,7 @@
         "#/definitions/csv"
       ],
       "allOf": [
-        { 
+        {
           "type": "object",
           "properties": {
             "type": {
@@ -106,6 +135,27 @@
           }
         }
       ],
+      "required": [
+        "path",
+        "name",
+        "type",
+        "initialPath"
+      ]
+    },
+    "directoryStore": {
+      "$id": "directoryStore",
+      "title": "Directory Store",
+      "$$target": [
+        "#/definitions/directory"
+      ],
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "directory"
+          ]
+        }
+      },
       "required": [
         "path",
         "name",
