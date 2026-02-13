@@ -13,10 +13,11 @@
 import os
 import sys
 import shutil
+
 from simbastore.store import Store
 
 
-class File(Store):
+class Directory(Store):
     def _init(self, configuration, directions):
         self.files = {}
 
@@ -24,18 +25,14 @@ class File(Store):
         success = True
 
         try:
-            shutil.copy(
+            shutil.copytree(
                 self.parent.resolvePath(self.initialPath),
                 self.parent.makeDirection(self.directions).joinpath(self.path),
             )
 
         except Exception as e:
             print(
-                "ERROR: Could not copy file '"
-                + str(self.parent.resolvePath(self.path))
-                + "' to '"
-                + str(self.parent.makeDirection(self.directions).joinpath(self.path))
-                + "'.",
+                f"ERROR: Could not copy directory '{str(self.parent.resolvePath(self.initialPath))}' to '{str(self.parent.makeDirection(self.directions).joinpath(self.path))}'.",
                 file=sys.stderr,
             )
             success = False
@@ -63,22 +60,18 @@ class File(Store):
 
             except Exception as e:
                 print(
-                    "ERROR: Could not create symlink '"
-                    + str(
+                    f"ERROR: Could not create symlink '{str(
                         self.parent.makeDirection(self.directions, "start").joinpath(
                             self.path
                         )
-                    )
-                    + "' to '"
-                    + str(symlink)
-                    + "'.",
+                    )}' to '{str(symlink)}'.",
                     file=sys.stderr,
                 )
                 success = False
 
         else:
             try:
-                shutil.copy(
+                shutil.copytree(
                     self.parent.makeDirection(self.directions, lastRunTick).joinpath(
                         self.path
                     ),
@@ -87,17 +80,13 @@ class File(Store):
 
             except Exception as e:
                 print(
-                    "ERROR: Could not copy file '"
-                    + str(
+                    f"ERROR: Could not copy directory '{str(
                         self.parent.makeDirection(
                             self.directions, lastRunTick
                         ).joinpath(self.path)
-                    )
-                    + "' to '"
-                    + str(
+                    )}' to '{str(
                         self.parent.makeDirection(self.directions).joinpath(self.path)
-                    )
-                    + "'.",
+                    )}'.",
                     file=sys.stderr,
                 )
                 success = False
@@ -123,21 +112,18 @@ class File(Store):
 
             except Exception as e:
                 print(
-                    "ERROR: Could not create symlink '"
-                    + str(
+                    f"ERROR: Could not create symlink '{str(
                         self.parent.makeDirection(self.directions, "start").joinpath(
                             self.path
                         )
-                    )
-                    + "' to '"
-                    + str(symlink)
-                    + "'.",
+                    )}' to '{str(symlink)}'.",
                     file=sys.stderr,
                 )
                 success = False
+
         else:
             try:
-                shutil.copy(
+                shutil.copytree(
                     self.parent.makeDirection(self.directions, lastRunTick).joinpath(
                         self.path
                     ),
@@ -146,17 +132,13 @@ class File(Store):
 
             except Exception as e:
                 print(
-                    "ERROR: Could not copy file '"
-                    + str(
+                    f"ERROR: Could not copy directory '{str(
                         self.parent.makeDirection(
                             self.directions, lastRunTick
                         ).joinpath(self.path)
-                    )
-                    + "' to '"
-                    + str(
+                    )}' to '{str(
                         self.parent.makeDirection(self.directions).joinpath(self.path)
-                    )
-                    + "'.",
+                    )}'.",
                     file=sys.stderr,
                 )
                 success = False
@@ -164,23 +146,7 @@ class File(Store):
         return success
 
     def _open(self, tick):
-        if not self.parent.formatTick(tick) in self.files:
-            if self.readOnly or tick != self.parent.getCurrentTick():
-                self.files[self.parent.formatTick(tick)] = (
-                    self.parent.makeDirection(self.directions, tick)
-                    .joinpath(self.path)
-                    .open("r")
-                )
-            else:
-                self.files[self.parent.formatTick(tick)] = (
-                    self.parent.makeDirection(self.directions, tick)
-                    .joinpath(self.path)
-                    .open("+")
-                )
-
-        return self.files[self.parent.formatTick(tick)]
+        return None
 
     def _close(self, tick, save, data):
-        if self.parent.formatTick(tick) in self.files:
-            self.files[self.parent.formatTick(tick)].close
-            del self.files[self.parent.formatTick(tick)]
+        pass

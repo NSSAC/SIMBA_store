@@ -83,6 +83,9 @@ class StoreFront:
         self.tickFormat = tickFormat
 
     def formatTick(self, tick) -> str:
+        if self.parent:
+            return ""
+
         return self.tickFormat.format(tick)
 
     def setCurrentTick(self, tick):
@@ -119,7 +122,7 @@ class StoreFront:
 
     def makeDirection(self, directions, tick=None):
         if self.parent:
-            Direction = self.parent.makeDirections([self.name], tick)
+            Direction = self.parent.makeDirection([self.name], tick)
         else:
             if tick == None:
                 Direction = self.root.joinpath(self.currentTick)  # type: ignore
@@ -211,17 +214,18 @@ class StoreFront:
             if not direction.exists():
                 os.mkdir(direction)
 
-            symlink = self.makeDirection([], "start")
+            if not self.parent:
+                symlink = self.makeDirection([], "start")
 
-            if symlink.exists():
-                os.remove(symlink)
+                if symlink.exists():
+                    os.remove(symlink)
 
-            os.symlink(self.currentTick, symlink)
+                os.symlink(self.currentTick, symlink)
 
             for store in self.stores.values():
                 success &= store.start(currentTick, currentTime)
 
-        except:
+        except Exception as e:
             success = False
 
         return success
@@ -263,12 +267,13 @@ class StoreFront:
             if not direction.exists():
                 os.mkdir(direction)
 
-            symlink = self.makeDirection([], "end")
+            if not self.parent:
+                symlink = self.makeDirection([], "end")
 
-            if symlink.exists():
-                os.remove(symlink)
+                if symlink.exists():
+                    os.remove(symlink)
 
-            os.symlink(self.currentTick, symlink)
+                os.symlink(self.currentTick, symlink)
 
             for store in self.stores.values():
                 store.end(lastRunTick, lastRunTime, endTick, endTime)

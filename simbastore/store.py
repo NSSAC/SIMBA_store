@@ -11,7 +11,6 @@
 # END: License
 
 import os
-from pathlib import Path
 from abc import ABC, abstractmethod
 
 
@@ -19,6 +18,16 @@ class Store(ABC):
     @classmethod
     def create(cls, parent, configuration, directions=[]):
         store = None
+
+        if configuration["type"] == "storeFront":
+            from simbastore.storefrontstore import Front
+
+            store = Front(parent, configuration, directions)
+
+        if configuration["type"] == "directory":
+            from simbastore.directorystore import Directory
+
+            store = Directory(parent, configuration, directions)
 
         if configuration["type"] == "file":
             from simbastore.filestore import File
@@ -39,19 +48,17 @@ class Store(ABC):
         self.name = configuration["name"]
         self.directions = directions[:]
         self.directions.append(configuration["name"])
-        self.path = configuration["path"]
-        self.initialPath = parent.resolvePath(configuration["initialPath"])
+        self.path = configuration["path"] if "path" in configuration else None
+        self.initialPath = (
+            parent.resolvePath(configuration["initialPath"])
+            if "initialPath" in configuration
+            else None
+        )
+        self.readOnly = (
+            configuration["readOnly"] if "readOnly" in configuration else False
+        )
+        self.table = configuration["table"] if "table" in configuration else None
         self.storeFront = None
-
-        if "readOnly" in configuration:
-            self.readOnly = configuration["readOnly"]
-        else:
-            self.readOnly = False
-
-        if "table" in configuration:
-            self.table = configuration["table"]
-        else:
-            self.table = None
 
         if "stores" in configuration:
             self.storeFront = StoreFront()
